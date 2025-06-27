@@ -13,6 +13,7 @@
         "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
         "start:backend": "cd backend && npm start",
         "start:frontend": "cd frontend && npm start",
+        "test": "cd backend && npm test && cd ../frontend && npm test",
         "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
         "deploy:render": "echo 'Deploy backend to Render using render.yaml configuration'",
         "deploy:vercel": "cd frontend && vercel --prod"
