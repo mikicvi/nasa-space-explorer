@@ -36,9 +36,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env
 .env.local
+.env.production.local
 
-# vercel
-.vercel
+# Production env templates are safe to commit but actual values should be set in deployment platforms
 
 # typescript
 *.tsbuildinfo

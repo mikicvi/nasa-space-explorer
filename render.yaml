@@ -1,0 +1,32 @@
+services:
+    # Backend API Service
+    - type: web
+      name: nasa-space-explorer-backend
+      runtime: node
+      plan: free
+      buildCommand: npm install
+      startCommand: npm start
+      rootDir: backend
+      envVars:
+          - key: NODE_ENV
+            value: production
+          - key: NASA_API_BASE_URL
+            value: https://api.nasa.gov
+          # Values to be set in Render Dashboard:
+          # NASA_API_KEY: your_actual_nasa_api_key
+          # FRONTEND_URL: https://nasa-space-explorer-frontend.onrender.com
+
+    # Frontend Static Site
+    - type: web
+      name: nasa-space-explorer-frontend
+      runtime: node
+      plan: free
+      buildCommand: npm run build
+      startCommand: npm start
+      rootDir: frontend
+      envVars:
+          - key: NODE_ENV
+            value: production
+          # Values to be set in Render Dashboard:
+          # NEXT_PUBLIC_BACKEND_URL: https://nasa-space-explorer-backend.onrender.com
+          # NEXT_PUBLIC_APP_URL: https://nasa-space-explorer-frontend.onrender.com
