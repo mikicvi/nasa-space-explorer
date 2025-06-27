@@ -56,7 +56,7 @@ export class NasaApiService {
 
 	// Mars Rover Photos
 	static async getMarsRoverPhotos(
-		rover: 'curiosity' | 'opportunity' | 'spirit',
+		rover: 'curiosity' | 'perseverance',
 		sol?: number,
 		earthDate?: string,
 		camera?: string,
@@ -78,9 +78,7 @@ export class NasaApiService {
 		return response.data.data;
 	}
 
-	static async getLatestMarsRoverPhotos(
-		rover: 'curiosity' | 'opportunity' | 'spirit'
-	): Promise<{ photos: MarsRoverPhoto[] }> {
+	static async getLatestMarsRoverPhotos(rover: 'curiosity' | 'perseverance'): Promise<{ photos: MarsRoverPhoto[] }> {
 		const response = await backendApi.get<ApiResponse<{ latest_photos: MarsRoverPhoto[] }>>(
 			`/mars-rovers/${rover}/latest-photos`
 		);

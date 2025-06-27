@@ -25,20 +25,29 @@ import { formatDate, formatDistanceToNow } from '@/lib/utils';
 
 const ROVERS = [
 	{ name: 'curiosity', displayName: 'Curiosity', status: 'Active', landingDate: '2012-08-05' },
-	{ name: 'opportunity', displayName: 'Opportunity', status: 'Complete', landingDate: '2004-01-25' },
-	{ name: 'spirit', displayName: 'Spirit', status: 'Complete', landingDate: '2004-01-04' },
+	{ name: 'perseverance', displayName: 'Perseverance', status: 'Active', landingDate: '2021-02-18' },
 ];
 
 const CAMERAS = [
 	{ key: 'all', name: 'All Cameras', description: 'Show photos from all cameras' },
+	{ key: 'navcam', name: 'NAVCAM', description: 'Navigation Camera' },
 	{ key: 'fhaz', name: 'FHAZ', description: 'Front Hazard Avoidance Camera' },
 	{ key: 'rhaz', name: 'RHAZ', description: 'Rear Hazard Avoidance Camera' },
+	{ key: 'mcz', name: 'MCZ', description: 'Mastcam-Z (Perseverance)' },
 	{ key: 'mast', name: 'MAST', description: 'Mast Camera' },
 	{ key: 'chemcam', name: 'CHEMCAM', description: 'Chemistry and Camera Complex' },
 	{ key: 'mahli', name: 'MAHLI', description: 'Mars Hand Lens Imager' },
 	{ key: 'mardi', name: 'MARDI', description: 'Mars Descent Imager' },
-	{ key: 'navcam', name: 'NAVCAM', description: 'Navigation Camera' },
+	{ key: 'supercam', name: 'SUPERCAM', description: 'SuperCam Remote Micro-Imager' },
+	{ key: 'pixl', name: 'PIXL', description: 'Planetary Instrument for X-ray Lithochemistry' },
+	{ key: 'skycam', name: 'SKYCAM', description: 'MEDA Skycam' },
 ];
+
+// Rover-specific camera availability
+const ROVER_CAMERAS: Record<string, string[]> = {
+	curiosity: ['all', 'navcam', 'fhaz', 'rhaz', 'mast', 'chemcam', 'mahli', 'mardi'],
+	perseverance: ['all', 'navcam', 'mcz', 'supercam', 'fhaz', 'rhaz', 'mast', 'pixl', 'sherloc', 'skycam'],
+};
 
 export default function MarsRoversPage() {
 	const [photos, setPhotos] = useState<MarsRoverPhoto[]>([]);
@@ -64,7 +73,7 @@ export default function MarsRoversPage() {
 			if (sol || earthDate) {
 				// Fetch photos for specific sol or earth date
 				const response = await NasaApiService.getMarsRoverPhotos(
-					selectedRover as 'curiosity' | 'opportunity' | 'spirit',
+					selectedRover as 'curiosity' | 'perseverance',
 					sol ? parseInt(sol) : undefined,
 					earthDate || undefined,
 					selectedCamera === 'all' ? undefined : selectedCamera
@@ -73,13 +82,31 @@ export default function MarsRoversPage() {
 			} else {
 				// Fetch latest photos
 				const response = await NasaApiService.getLatestMarsRoverPhotos(
-					selectedRover as 'curiosity' | 'opportunity' | 'spirit'
+					selectedRover as 'curiosity' | 'perseverance'
 				);
 				result = response?.photos || [];
 
 				// Filter by camera if specified
 				if (selectedCamera !== 'all') {
-					result = result.filter((photo) => photo.camera.name.toLowerCase() === selectedCamera.toLowerCase());
+					const cameraMap: Record<string, string[]> = {
+						fhaz: ['fhaz'],
+						rhaz: ['rhaz'],
+						mast: ['mast'],
+						navcam: ['nav'],
+						mcz: ['mcz'],
+						chemcam: ['chemcam'],
+						mahli: ['mahli'],
+						mardi: ['mardi'],
+						supercam: ['supercam'],
+						pixl: ['pixl'],
+						skycam: ['skycam'],
+					};
+
+					result = result.filter((photo) => {
+						const cameraName = photo.camera.name.toLowerCase();
+						const keywords = cameraMap[selectedCamera];
+						return keywords?.some((keyword) => cameraName.includes(keyword)) ?? false;
+					});
 				}
 			}
 
@@ -96,6 +123,13 @@ export default function MarsRoversPage() {
 	useEffect(() => {
 		fetchPhotos();
 	}, [selectedRover, selectedCamera]);
+
+	// Reset camera selection if it's not available for the selected rover
+	useEffect(() => {
+		if (selectedRover && ROVER_CAMERAS[selectedRover] && !ROVER_CAMERAS[selectedRover].includes(selectedCamera)) {
+			setSelectedCamera('all');
+		}
+	}, [selectedRover]);
 
 	const filteredPhotos = (photos || []).filter(
 		(photo) =>
@@ -127,8 +161,8 @@ export default function MarsRoversPage() {
 					Mars Rover Photos
 				</h1>
 				<p className='text-muted-foreground max-w-2xl mx-auto'>
-					Explore Mars through the eyes of NASA's robotic explorers. View stunning images from Curiosity,
-					Opportunity, and Spirit rovers as they traverse the Martian landscape.
+					Explore Mars through the eyes of NASA's robotic explorers. View stunning images from Curiosity and
+					Perseverance rovers as they traverse the Martian landscape.
 				</p>
 			</motion.div>
 
@@ -146,7 +180,7 @@ export default function MarsRoversPage() {
 				<CardContent className='space-y-6'>
 					{/* Rover Selection */}
 					<Tabs value={selectedRover} onValueChange={setSelectedRover} className='w-full'>
-						<TabsList className='grid w-full grid-cols-3'>
+						<TabsList className='grid w-full grid-cols-2'>
 							{ROVERS.map((rover) => (
 								<TabsTrigger key={rover.name} value={rover.name} className='flex items-center gap-2'>
 									<Activity className='h-4 w-4' />
@@ -171,16 +205,31 @@ export default function MarsRoversPage() {
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
-									{CAMERAS.map((camera) => (
-										<SelectItem key={camera.key} value={camera.key}>
-											<div>
-												<div className='font-medium'>{camera.name}</div>
-												<div className='text-xs text-muted-foreground'>
-													{camera.description}
+									{ROVER_CAMERAS[selectedRover]?.map((cameraKey: string) => {
+										const camera = CAMERAS.find((c) => c.key === cameraKey);
+										return (
+											camera && (
+												<SelectItem key={camera.key} value={camera.key}>
+													<div>
+														<div className='font-medium'>{camera.name}</div>
+														<div className='text-xs text-muted-foreground'>
+															{camera.description}
+														</div>
+													</div>
+												</SelectItem>
+											)
+										);
+									}) ||
+										CAMERAS.map((camera) => (
+											<SelectItem key={camera.key} value={camera.key}>
+												<div>
+													<div className='font-medium'>{camera.name}</div>
+													<div className='text-xs text-muted-foreground'>
+														{camera.description}
+													</div>
 												</div>
-											</div>
-										</SelectItem>
-									))}
+											</SelectItem>
+										))}
 								</SelectContent>
 							</Select>
 						</div>
@@ -189,10 +238,15 @@ export default function MarsRoversPage() {
 							<label className='text-sm font-medium mb-2 block'>Sol (Mars Day)</label>
 							<Input
 								type='number'
-								placeholder='e.g., 1000'
+								placeholder={selectedRover === 'perseverance' ? 'e.g., 500 (max: 900+)' : 'e.g., 3000'}
 								value={sol}
 								onChange={(e) => setSol(e.target.value)}
 							/>
+							{selectedRover === 'perseverance' && (
+								<p className='text-xs text-muted-foreground mt-1'>
+									Try Sol 100-500 for recent high-quality images
+								</p>
+							)}
 						</div>
 
 						<div>
@@ -238,6 +292,27 @@ export default function MarsRoversPage() {
 					</div>
 				</CardContent>
 			</Card>
+
+			{/* Camera Info Alert */}
+			{selectedRover === 'perseverance' && (
+				<Alert>
+					<Camera className='h-4 w-4' />
+					<AlertDescription>
+						<strong>Perseverance:</strong> This rover features advanced cameras including SUPERCAM, PIXL,
+						SHERLOC, and MAST cameras. It's equipped with the most sophisticated imaging system ever sent to
+						Mars.
+					</AlertDescription>
+				</Alert>
+			)}
+			{selectedRover === 'curiosity' && (
+				<Alert>
+					<Camera className='h-4 w-4' />
+					<AlertDescription>
+						<strong>Curiosity:</strong> This rover features advanced cameras including MAST, CHEMCAM, MAHLI,
+						and MARDI. PANCAM is not available - use MAST camera for panoramic views.
+					</AlertDescription>
+				</Alert>
+			)}
 
 			{/* Error State */}
 			{error && (
@@ -418,7 +493,16 @@ export default function MarsRoversPage() {
 						<Camera className='h-16 w-16 text-muted-foreground mx-auto mb-4' />
 						<h3 className='text-lg font-semibold mb-2'>No Photos Found</h3>
 						<p className='text-muted-foreground mb-4'>
-							Try adjusting your filters or search terms to find more photos.
+							{selectedCamera === 'pancam' && selectedRover === 'curiosity'
+								? 'PANCAM is only available on older rovers. Try selecting MAST camera for Curiosity.'
+								: selectedCamera !== 'all' &&
+								  selectedRover &&
+								  ROVER_CAMERAS[selectedRover] &&
+								  !ROVER_CAMERAS[selectedRover].includes(selectedCamera)
+								? `${selectedCamera.toUpperCase()} camera is not available on ${
+										ROVERS.find((r) => r.name === selectedRover)?.displayName
+								  }. Try a different camera or "All Cameras".`
+								: 'Try adjusting your filters, changing the Sol/date, or search terms to find more photos.'}
 						</p>
 						<Button onClick={clearFilters} variant='outline'>
 							Clear All Filters
