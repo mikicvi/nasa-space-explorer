@@ -16,14 +16,14 @@ services:
           # NASA_API_KEY: your_actual_nasa_api_key
           # FRONTEND_URL: https://nasa-space-explorer-frontend.onrender.com
 
-    # Frontend Static Site
+    # Frontend Service
     - type: web
       name: nasa-space-explorer-frontend
       runtime: node
       plan: free
-      buildCommand: npm run build
-      startCommand: npm start
       rootDir: frontend
+      buildCommand: npm ci && npm run build
+      startCommand: npm start
       envVars:
           - key: NODE_ENV
             value: production
