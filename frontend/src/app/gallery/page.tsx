@@ -184,7 +184,7 @@ export default function ImageGalleryPage() {
 					text: image.description,
 					url: window.location.href,
 				});
-			} catch (err) {
+			} catch {
 				// User cancelled sharing
 			}
 		} else {

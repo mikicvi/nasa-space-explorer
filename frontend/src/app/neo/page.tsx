@@ -2,20 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-	Globe,
-	AlertTriangle,
-	Calendar,
-	Ruler,
-	Zap,
-	Search,
-	Filter,
-	Eye,
-	ExternalLink,
-	TrendingUp,
-	Shield,
-	Target,
-} from 'lucide-react';
+import { Globe, AlertTriangle, Calendar, Ruler, Zap, Search, Filter, Eye, ExternalLink, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

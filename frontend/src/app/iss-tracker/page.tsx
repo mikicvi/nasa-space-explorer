@@ -11,7 +11,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { NasaApiService } from '@/services/nasa-api';
 import type { ISSPosition } from '@/types/nasa';
-import { formatCoordinates } from '@/lib/utils';
 
 interface ISSPassTime {
 	duration: number;

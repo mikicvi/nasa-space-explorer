@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Heart, Rocket } from 'lucide-react';
+import { Rocket } from 'lucide-react';
 import { APP_CONFIG } from '@/constants';
 
 export function Footer() {

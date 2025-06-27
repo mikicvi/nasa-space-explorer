@@ -33,11 +33,12 @@ A modern web application that brings NASA's space data to your fingertips. Built
 ### Installation
 
 1. **Clone and install dependencies**
-   ```bash
-   git clone https://github.com/mikicvi/nasa-space-explorer.git
-   cd nasa-space-explorer
-   npm run install:all  # Installs dependencies for both frontend and backend
-   ```
+
+    ```bash
+    git clone https://github.com/mikicvi/nasa-space-explorer.git
+    cd nasa-space-explorer
+    npm run install:all  # Installs dependencies for both frontend and backend
+    ```
 
 2. **Setup environment files**
 
@@ -81,23 +82,28 @@ nasa-space-explorer/
 1. Push to GitHub
 2. Go to [Render Dashboard](https://dashboard.render.com) → "New" → "Blueprint"
 3. Connect your repository and select `render.yaml`
-4. Set environment variables:
+4. Set environment variables in Render dashboard for frontend - (open service and go to "Environment" tab):
+
+    ```
+    NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.onrender.com
+    NEXT_PUBLIC_APP_URL=https://your-frontend-url.onrender.com
+    ```
+
+5. Set environment variables in Render dashboard for backend - (open service and go to "Environment" tab):
+
     ```
     NASA_API_KEY=your_actual_api_key
     FRONTEND_URL=https://your-frontend-url.onrender.com
-    NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.onrender.com
     ```
-5. Deploy!
 
-**Benefits:** Better performance, simpler management, cost-effective
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+6. Deploy!
 
 ## Tech Stack
 
 **Frontend:** Next.js 15, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion  
 **Backend:** Express.js, Axios, CORS, Helmet, Rate Limiting  
-**APIs:** NASA APOD, Mars Rover Photos, NEO, ISS Tracking, Image Search
+**APIs:** NASA APOD, Mars Rover Photos, NEO, ISS Tracking, Image Search  
+**Testing:** Jest, React Testing Library
 
 ---
 
