@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calendar, Camera, Globe, Satellite, Star, Rocket, Telescope, Zap, MapPin } from 'lucide-react';
+import { ArrowRight, Calendar, Camera, Globe, Satellite, Rocket, Telescope, Zap, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
