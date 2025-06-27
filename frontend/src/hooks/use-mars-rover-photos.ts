@@ -4,7 +4,7 @@ import { MarsRoverPhoto } from '@/types/nasa';
 import { getErrorMessage } from '@/lib/utils';
 
 export function useMarsRoverPhotos(
-	rover: 'curiosity' | 'opportunity' | 'spirit',
+	rover: 'curiosity' | 'perseverance',
 	sol?: number,
 	earthDate?: string,
 	camera?: string,
